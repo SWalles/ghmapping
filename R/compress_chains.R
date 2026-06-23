@@ -21,7 +21,6 @@ compress_chains <- function(G) {
     while (interior_set[as.integer(neighbors(G, interior_head, mode="in"))]) {
       interior_head <- as.integer(neighbors(G, interior_head, mode="in"))
       
-      count <- count + 1
     }
     head <- as.integer(neighbors(G, interior_head, mode="in"))
     
