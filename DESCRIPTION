@@ -1,6 +1,6 @@
 Package: ghmapping
 Type: Package
-Title: Graph Hopper Bulk Aggregation
+Title: GraphHopper Bulk Aggregation
 Version: 1.0
 Date: 2026-06-20
 Author: Stefan Walles
