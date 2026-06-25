@@ -8,12 +8,15 @@ Maps routes and aggregates weights into a graph
 Recieves a data frame as produced by \code{\link{setup_simulation}} and calculates each route and aggregates them into a graph saved to the disk as an RDS file. Supports parallel route computation. Option to process in batches when memory is limited. You can use the \code{\link{join_graphs_on_coordinates}} function to join the graphs from each batch back together into a single result.
 }
 \usage{
-ghmapping(simdata, osm_cache, osm_data, out_dir, n_cores = 1, n_chunks = 1)
+ghmapping(simdata, sort_col, osm_cache, osm_data, out_dir, n_cores = 1, n_chunks = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{simdata}{
 A data frame as produced by the \code{\link{setup_simulation}} function. Or a custom data frame with columns named: "s.lat", "s.lon", "d.lat", "d.lon", "weight" representing origin latitude, origin longitude, destination latitude, destination longitude, and route weight respectively.
+}
+\item{sort_col}{
+A single string value that specifies the name of the column of simdata that specifies groups that should be batched together. Any value that is not a valid column name in simdata will result in an equal split with a warning.
 }
   \item{osm_cache}{
 A string value containing the path to a directory to be used for Open Street Maps caching.

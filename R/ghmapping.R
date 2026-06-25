@@ -1,10 +1,16 @@
-ghmapping <- function(simdata, osm_cache, osm_data, out_dir, n_cores = 1, n_chunks = 1) {
+ghmapping <- function(simdata, sort_col, osm_cache, osm_data, out_dir, n_cores = 1, n_chunks = 1) {
+  if (!sort_col %in% colnames(simdata)) {
+    warning("Specified sort column not in df, equal splitting was used.")
+    sort_col <- "chunk"
+    simdata$chunk <- rep(seq_len(n_chunks), each = ceiling(nrow(simdata) / n_chunks))[1:nrow(simdata)]
+  }
+  
   # Order data by destination
-  simdata <- simdata[order(simdata$d.SA2),]
+  simdata <- simdata[order(simdata[[sort_col]]),]
   
   # Split chunks
   # Trying to keep destinations together
-  cum_dest_count <- cumsum(table(simdata$d.SA2))
+  cum_dest_count <- cumsum(table(simdata[[sort_col]]))
   m <- sapply(seq_len(n_chunks), function(i) {
     which.min(abs(cum_dest_count - min(i * nrow(simdata) / n_chunks, nrow(simdata))))
   })

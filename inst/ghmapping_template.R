@@ -32,7 +32,7 @@ simdata <- simdata[simdata$d.SA2 %in% auck_sa2,]
 # Run the mapping function to calculate all  routes and aggregate them.
 # For example we're using 6 cores and processing in 5 parts
 # Assigning the function execution to a variable gives you run time statistics
-stats <- ghmapping(simdata, osm_cache, osm_data, out_dir, n_cores = 6, n_chunks = 5)
+stats <- ghmapping(simdata, sort_col = "d.SA2", osm_cache, osm_data, out_dir, n_cores = 6, n_chunks = 5)
 
 # Now we combine the seven batch graphs into the final result
 # Get graph chunk file names
