@@ -4,3 +4,4 @@
 /..Rcheck
 .Rbuildignore
 ghmapping_*.tar.gz
+/mb_vs_sa2

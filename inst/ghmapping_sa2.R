@@ -7,7 +7,7 @@ mb_path <- "data/meshblock/2023-census-electoral-population-at-meshblock-level-2
 geo_areas_path <- "data/geographic-areas-table-2025.csv"
 osm_cache <- "data/osm/cache"
 osm_data <- "data/osm/new-zealand-latest.osm.pbf"
-out_dir <- "out"
+out_dir <- "out/sa2_only"
 
 # Download files if necessary
 if (any(!file.exists(c(jtw_path, mb_path, geo_areas_path, osm_data))) | any(!dir.exists(c(osm_cache, out_dir)))) {
@@ -15,11 +15,28 @@ if (any(!file.exists(c(jtw_path, mb_path, geo_areas_path, osm_data))) | any(!dir
 }
 
 # Load data from file and compile into a dataset to be routed
-jtw <- load_JTW(jtw_path, redacted = function() {sample(1:6)}, min_trips = 10)
+jtw <- load_JTW(jtw_path, redacted = function() {0}, min_trips = 0.01)
 mb <- load_meshblocks(mb_path, geo_areas_path,
-                      redacted = function() {sample(1:6)}
+                      redacted = function() {0}
                       )
-simdata <- setup_simulation(jtw, mb, min_weight = 2)
+
+sa2_coords <- mb |> 
+  group_by(SA22023_code) |> 
+  summarise(geometry = st_union(geometry)) |>
+  mutate(centroids = st_centroid(geometry),
+         lon = st_coordinates(centroids)[, 1],
+         lat = st_coordinates (centroids)[, 2]) |>
+  st_drop_geometry() |>
+  select(SA22023_code, lon, lat)
+
+simdata <- jtw |> 
+  left_join(sa2_coords, by = join_by(s.SA2 == SA22023_code)) |> 
+  left_join(sa2_coords, by = join_by(d.SA2 == SA22023_code)) |> 
+  rename(s.lat = lat.x,
+         s.lon = lon.x,
+         d.lat = lat.y,
+         d.lon = lon.y,
+         weight = total_trips)
 
 # Now we can restrict the destinations to our area of interest - in this case Auckland City
 # Find Auckland SA2 Areas
